@@ -1,8 +1,11 @@
+from curses import window
 import pymysql
 import barcode
 import func as fn
+from tkinter import * 
 
 pymysql.install_as_MySQLdb()
+
 
 
 
@@ -14,25 +17,31 @@ admin_Username = "root"
 admin_Password = "brendanc"
 admin_db = "healthi"
 
+
+# Establish connection
 connection = pymysql.connect(host=admin_host,user=admin_Username,password=admin_Password,database=admin_db)
 cursor = connection.cursor()
 
 
+def SearchQuery(query):
+    try:
+        query = f"SELECT Product FROM products WHERE Product = '{query}'"
+        cursor.execute(query)
+        data = cursor.fetchone()
+        data = fn.Clean(data)
+        return data
+    except:
+        return None
+    
 
-answer = input("What product would you like to learn about?: ")
+def NutriFacts(product):
+    return fn.ReturnFact(product)
 
-query = f"SELECT Product FROM products WHERE Product = '{answer}'"
-
-imageloc = 'barcode.gif'
-barcode.decode(imageloc)
-
+def BarcodeReader(image):
+    return barcode.BarcodeReader(image)
 
 
-cursor.execute(query)
-data = cursor.fetchone()
-data = fn.Clean(data)
-print(data)
-print(fn.ReturnFact(data))
+
 connection.close()
 
 
